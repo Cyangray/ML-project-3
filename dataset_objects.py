@@ -257,7 +257,7 @@ class AtomicMasses(dataset):
         
         self.df = pd.concat([dataset, new_dataset_1, new_dataset_2], axis = 1)
         
-        givenames = False
+        givenames = True
         if givenames == True:
             for idx, row in self.df.iterrows():
                 self.df.rename(index={idx : (str(self.df.loc[idx, 'A']) + self.df.loc[idx, 'Element']) }, inplace=True)
@@ -269,6 +269,12 @@ class AtomicMasses(dataset):
         # the Ebinding column won't be numeric. Coerce to float and drop these entries.
         # Do the same for the BetaDecayEnergy, S2n, S2p, Sn and Sp columns where there are no results,
         # meaning where the entry is '*'
+        
+        #72Cu, 209Ac is found in AME12, but only experimental in AME16. Value is dropped
+        AME12butnot16 = ['72Cu', '209Ac']
+        for nucleus in AME12butnot16:
+            self.df.drop(nucleus, inplace = True)
+        
         columns = ['MassExcess', 'BetaDecayEnergy', 'S2n', 'S2p', 'Sn', 'Sp']
         for col in columns:
             self.df[col] = pd.to_numeric(self.df[col], errors='coerce')
