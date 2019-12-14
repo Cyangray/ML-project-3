@@ -166,7 +166,7 @@ class dataset():
 
     def fill_array_test_training(self):
         """ Fill the arrays, eg. test_x_1d and x_1d for x, y and z with
-        the actual training data according to how the indicies was sorted in 
+        the actual training data according to how the indices were sorted in 
         sort_training_test_kfold."""
         testing = self.test_indices ; training = self.training_indices
 
@@ -284,7 +284,47 @@ class AtomicMasses(dataset):
         
         target = self.df.pop('MassExcess')
         self.df['MassExcess'] = target
-        super().polish_and_divide()
+        self.values = np.copy(self.df.to_numpy())
+        self.feature_names = np.copy(self.df.columns)
+        
+        
+        self.x_1d = self.values[:, :-1]
+        self.y_1d = self.values[:,-1]
+        self.N = self.x_1d.shape[0]
+        
+    def sort_train_test(self, AME12, useAME12 = False):
+        '''Method overwriting the parent class' sort_train_test, taking as input
+        the previously gotten labels for the train and test nuclei.
+        With useEMA12 = True, the values from the EMA12 database will be used as
+        training set, otherwise the updated values from EMA16 will be used. Default
+        to False'''
+        
+        labels_test = np.setdiff1d(self.df.index.to_numpy(), AME12.df.index.to_numpy())
+        AME16labels = self.df.index.to_numpy()
+        test_idxs = []
+        for i, label in enumerate(labels_test):
+            test_idxs.append(np.where(AME16labels == label)[0][0])
+        
+        self.test_x_1d = self.x_1d[np.array(test_idxs, dtype=int)[:], :]
+        self.test_y_1d = self.y_1d[np.array(test_idxs, dtype=int)[:]]
+        
+        labels_train = AME12.df.index.to_numpy()
+        train_idxs = []
+        if useAME12:
+            trainvalues_x = AME12.x_1d
+            trainvalues_y = AME12.y_1d
+        else:
+            for i, label in enumerate(labels_train):
+                train_idxs.append(np.where(AME16labels == label)[0][0])
+            trainvalues_x = self.x_1d[np.array(train_idxs, dtype=int)[:], :]
+            trainvalues_y = self.y_1d[np.array(train_idxs, dtype=int)[:]]
+        
+        self.x_1d = trainvalues_x
+        self.y_1d = trainvalues_y
+        
+        # Redefine lengths for training and testing.
+        self.N = self.x_1d.shape[0]
+        self.N_testing = self.x_1d.shape[0]
         
         
     

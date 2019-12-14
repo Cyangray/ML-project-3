@@ -114,14 +114,14 @@ def plot_3d_terrain(x, y, z, x_map, y_map, z_map):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     
-    surf1 = ax.plot_trisurf(x_map, y_map, z_map, cmap=cm.coolwarm, alpha=0.2)
-    surf2 = ax.scatter(x, y, z)
+    ax.plot_trisurf(x_map, y_map, z_map, cmap=cm.coolwarm, alpha=0.2)
+    ax.scatter(x, y, z)
     
     ax.set_xlabel("x")
     ax.set_ylabel("y")
 
     # Add a color bar which maps values to colors.
-    fig.colorbar(surf, shrink=0.5, aspect=5)
+    #fig.colorbar(shrink=0.5, aspect=5)
     plt.show()
 
 def plot_bias_var_tradeoff(deg, mse):
@@ -266,27 +266,33 @@ def show_heatmap_mse_R2(lmbd_vals, eta_vals, train_mse, test_mse, train_R2, test
     axs[0].set_title("Training MSE")
     axs[0].set_ylabel("$\eta$")
     axs[0].set_xlabel("$\lambda$")
-    #plt.show()
+    bottom, top = axs[0].get_ylim()
+    axs[0].set_ylim(bottom + 0.5, top - 0.5)
     
     #fig, ax = plt.subplots(figsize = (10, 10))
     sns.heatmap(test_mse, xticklabels=lmbd_vals, yticklabels=eta_vals, annot=True, ax=axs[1], cmap="viridis")
     axs[1].set_title("Test MSE")
     axs[1].set_ylabel("$\eta$")
     axs[1].set_xlabel("$\lambda$")
-    #plt.show()
+    bottom, top = axs[1].get_ylim()
+    axs[1].set_ylim(bottom + 0.5, top - 0.5)
     
     #fig, ax = plt.subplots(figsize = (10, 10))
     sns.heatmap(train_R2, xticklabels=lmbd_vals, yticklabels=eta_vals, annot=True, ax=axs[2], cmap="viridis")
     axs[2].set_title("Training R2 score")
     axs[2].set_ylabel("$\eta$")
     axs[2].set_xlabel("$\lambda$")
-    #plt.show()
+    bottom, top = axs[2].get_ylim()
+    axs[2].set_ylim(bottom + 0.5, top - 0.5)
     
     #fig, ax = plt.subplots(figsize = (10, 10))
     sns.heatmap(test_R2, xticklabels=lmbd_vals, yticklabels=eta_vals, annot=True, ax=axs[3], cmap="viridis")
     axs[3].set_title("Test R2 score")
     axs[3].set_ylabel("$\eta$")
     axs[3].set_xlabel("$\lambda$")
+    bottom, top = axs[3].get_ylim()
+    axs[3].set_ylim(bottom + 0.5, top - 0.5)
+    
     plt.tight_layout(h_pad = 2*1.08)
     plt.show()
     
@@ -305,35 +311,48 @@ def show_heatmaps(lmbd_vals, eta_vals, train_accuracy, test_accuracy, train_roca
     labelx_text = "$\lambda$"
     labely_text = "$\log_{10} \eta$"
     
+    
     sns.heatmap(train_accuracy, xticklabels=labelx, yticklabels=labely, annot=True, ax=axs[0], cmap="viridis")
     axs[0].set_title("Training Accuracy")
     axs[0].set_ylabel(labely_text)
     axs[0].set_xlabel(labelx_text)
+    bottom, top = axs[0].get_ylim()
+    axs[0].set_ylim(bottom + 0.5, top - 0.5)
     
     sns.heatmap(test_accuracy, xticklabels=labelx, yticklabels=labely, annot=True, ax=axs[1], cmap="viridis")
     axs[1].set_title("Test Accuracy")
     axs[1].set_ylabel(labely_text)
     axs[1].set_xlabel(labelx_text)
+    bottom, top = axs[1].get_ylim()
+    axs[1].set_ylim(bottom + 0.5, top - 0.5)
     
     sns.heatmap(train_rocauc, xticklabels=labelx, yticklabels=labely, annot=True, ax=axs[2], cmap="viridis")
     axs[2].set_title("Train ROC-AUC score")
     axs[2].set_ylabel(labely_text)
     axs[2].set_xlabel(labelx_text)
+    bottom, top = axs[2].get_ylim()
+    axs[2].set_ylim(bottom + 0.5, top - 0.5)
     
     sns.heatmap(test_rocauc, xticklabels=labelx, yticklabels=labely, annot=True, ax=axs[3], cmap="viridis")
     axs[3].set_title("Test ROC-AUC score")
     axs[3].set_ylabel(labely_text)
     axs[3].set_xlabel(labelx_text)
+    bottom, top = axs[3].get_ylim()
+    axs[3].set_ylim(bottom + 0.5, top - 0.5)
     
     sns.heatmap(train_area_ratio, xticklabels=labelx, yticklabels=labely, annot=True, ax=axs[4], cmap="viridis")
     axs[4].set_title("Train area ratio")
     axs[4].set_ylabel(labely_text)
     axs[4].set_xlabel(labelx_text)
+    bottom, top = axs[4].get_ylim()
+    axs[4].set_ylim(bottom + 0.5, top - 0.5)
     
     sns.heatmap(test_area_ratio, xticklabels=labelx, yticklabels=labely, annot=True, ax=axs[5], cmap="viridis")
     axs[5].set_title("Test area ratio")
     axs[5].set_ylabel(labely_text)
     axs[5].set_xlabel(labelx_text)
+    bottom, top = axs[5].get_ylim()
+    axs[5].set_ylim(bottom + 0.5, top - 0.5)
     
     plt.tight_layout(h_pad = 2*1.08)
     plt.show()
