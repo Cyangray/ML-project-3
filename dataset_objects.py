@@ -5,7 +5,7 @@ import copy
 from visualization import plot_features
 from sklearn import preprocessing
 import sys
-from functions import franke_function
+from functions import franke_function, is_odd
 
 class dataset():
     
@@ -263,7 +263,20 @@ class AtomicMasses(dataset):
                 self.df.rename(index={idx : (str(self.df.loc[idx, 'A']) + self.df.loc[idx, 'Element']) }, inplace=True)
         self.df.pop('Element')
         
-        
+    def add_oddeven(self):
+        '''add a column to the dataset telling if the nucleus is even-even, odd-even
+        or odd-odd. '''
+        self.df['Parity'] = 0
+        for idx, row in self.df.iterrows():
+            if is_odd(row['N']) or is_odd(row['Z']):
+                if is_odd(row['N']) and is_odd(row['Z']): #odd-odd
+                    self.df.at[idx, 'Parity'] = 0
+                else:               #odd-even
+                    self.df.at[idx, 'Parity'] = 1
+            else: #even-even
+                self.df.at[idx, 'Parity'] = 2
+            
+    
     def AMPolishDivide(self):
         # Extrapolated values are indicated by '#' in place of the decimal place, so
         # the Ebinding column won't be numeric. Coerce to float and drop these entries.

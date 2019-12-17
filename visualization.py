@@ -114,8 +114,8 @@ def plot_3d_terrain(x, y, z, x_map, y_map, z_map):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     
-    ax.plot_trisurf(x_map, y_map, z_map, cmap=cm.coolwarm, alpha=0.2)
-    ax.scatter(x, y, z)
+    ax.plot_trisurf(x_map, y_map, z_map, cmap=cm.coolwarm, alpha=0.2, edgecolor = 'none', antialiased = False, linewidth = 0.0)
+    ax.scatter(x, y, z, cmap = cm.coolwarm)
     
     ax.set_xlabel("x")
     ax.set_ylabel("y")
@@ -256,42 +256,38 @@ def plot_terrains(ind_var, ind_var_text, method, CV_text, x_matrices, x_labels, 
     ax2.legend()
     plt.show()
 
-def show_heatmap_mse_R2(lmbd_vals, eta_vals, train_mse, test_mse, train_R2, test_R2):
+def show_heatmap_mse_R2(lmbd_vals, eta_vals, train_mse, test_mse, train_R2, test_R2, NN = True, eliminate_extremes = True):
+    
+    if NN:
+        ylabel = '%\eta'
+    else:
+        ylabel = 'Depth'
+    
+    titlelist = ['Training MSE', 'Test MSE', 'Training R2 score', 'Test R2 score']
+    plotlist = [train_mse, test_mse, train_R2, test_R2]
+    
+    if eliminate_extremes:
+        for i, row in enumerate(train_R2):
+            for j, item in enumerate(row):
+                if abs(item) > 1:
+                    train_R2[i][j]= np.nan
+                    train_mse[i][j]= np.nan
+                    test_mse[i][j]= np.nan
+                    test_R2[i][j]= np.nan
+            
+            
     fig, axes = plt.subplots(nrows = 2, ncols = 2, figsize = (17, 10), squeeze = True)
     axs = axes.ravel()
     sns.set()
             
-    #fig, ax = plt.subplots(figsize = (10, 10))
-    sns.heatmap(train_mse, xticklabels=lmbd_vals, yticklabels=eta_vals, annot=True, ax=axs[0], cmap="viridis")
-    axs[0].set_title("Training MSE")
-    axs[0].set_ylabel("$\eta$")
-    axs[0].set_xlabel("$\lambda$")
-    bottom, top = axs[0].get_ylim()
-    axs[0].set_ylim(bottom + 0.5, top - 0.5)
-    
-    #fig, ax = plt.subplots(figsize = (10, 10))
-    sns.heatmap(test_mse, xticklabels=lmbd_vals, yticklabels=eta_vals, annot=True, ax=axs[1], cmap="viridis")
-    axs[1].set_title("Test MSE")
-    axs[1].set_ylabel("$\eta$")
-    axs[1].set_xlabel("$\lambda$")
-    bottom, top = axs[1].get_ylim()
-    axs[1].set_ylim(bottom + 0.5, top - 0.5)
-    
-    #fig, ax = plt.subplots(figsize = (10, 10))
-    sns.heatmap(train_R2, xticklabels=lmbd_vals, yticklabels=eta_vals, annot=True, ax=axs[2], cmap="viridis")
-    axs[2].set_title("Training R2 score")
-    axs[2].set_ylabel("$\eta$")
-    axs[2].set_xlabel("$\lambda$")
-    bottom, top = axs[2].get_ylim()
-    axs[2].set_ylim(bottom + 0.5, top - 0.5)
-    
-    #fig, ax = plt.subplots(figsize = (10, 10))
-    sns.heatmap(test_R2, xticklabels=lmbd_vals, yticklabels=eta_vals, annot=True, ax=axs[3], cmap="viridis")
-    axs[3].set_title("Test R2 score")
-    axs[3].set_ylabel("$\eta$")
-    axs[3].set_xlabel("$\lambda$")
-    bottom, top = axs[3].get_ylim()
-    axs[3].set_ylim(bottom + 0.5, top - 0.5)
+    for i, ax in enumerate(axs):
+        sns.heatmap(plotlist[i], xticklabels=lmbd_vals, yticklabels=eta_vals, annot=True, ax=ax, cmap="viridis")
+        ax.set_title(titlelist[i])
+        ax.set_ylabel(ylabel)
+        ax.set_xlabel('$\lambda$')
+        
+        bottom, top = ax.get_ylim()
+        ax.set_ylim(bottom + 0.5, top - 0.5)
     
     plt.tight_layout(h_pad = 2*1.08)
     plt.show()

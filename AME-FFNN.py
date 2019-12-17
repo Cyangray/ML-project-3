@@ -17,12 +17,12 @@ import pickle
 #k-fold cross validation parameters
 CV = False
 k = 5
-#np.random.seed(1234)
+np.random.seed(1234)
 
 #Stochastic gradient descent parameters
-m = 10           #Number of minibatches
+m = 20           #Number of minibatches
 Niterations = 5000
-deg = 10
+deg = 0
 
 
 # Load dataset
@@ -51,7 +51,7 @@ n_samples = X_train.shape[0]
 ###### grid search #######
 
 #Initialize vectors for saving values
-eta_vals = np.logspace(-6, -2, 5)
+eta_vals = np.logspace(-6, -1, 6)
 lmbd_vals = np.hstack((np.array([0]), np.logspace(-6, -1, 6)))
 train_mse = np.zeros((len(eta_vals), len(lmbd_vals)))
 test_mse = np.zeros((len(eta_vals), len(lmbd_vals)))
@@ -71,11 +71,11 @@ for i, eta in enumerate(eta_vals):
                              n_hidden_neurons = 20, 
                              eta = eta,
                              lmbd = lmbd,
-                             input_activation = 'tanh',
+                             input_activation = 'sigmoid',
                              output_activation = 'linear',
                              cost_function = 'MSE')
-        ffnn.add_layer(20, activation_method = 'tanh')
-        #ffnn.add_layer(20, activation_method = 'sigmoid')
+        ffnn.add_layer(20, activation_method = 'sigmoid')
+        #ffnn.add_layer(10, activation_method = 'tanh')
         
         #Train network
         ffnn.train()

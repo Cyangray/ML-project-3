@@ -10,13 +10,14 @@ filepaths16 = ['data/mass16.txt', 'data/rct1-16.txt', 'data/rct2-16.txt']
 AME12 = AtomicMasses(filepaths12)
 AME16 = AtomicMasses(filepaths16)
 
+AME12.add_oddeven()
+AME16.add_oddeven()
+
 AME12.AMPolishDivide()
 AME16.AMPolishDivide()
 
-print(AME16.values[9,2])
 #Normalize dataset.
 AME16.normalize_dataset()
-print(AME16.values[9,2])
 #Normalize manually the other dataset so that they all have the same normalization
 AME12.normalized = True
 AME12.x_1d_unscaled = AME12.x_1d.copy()

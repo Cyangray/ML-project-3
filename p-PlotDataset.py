@@ -15,7 +15,8 @@ AMEnew = Datasets[2]
 #A plot
 Mnumbers = np.array([2, 8, 20, 28, 50, 82, 126]) -3
 
-plot_df = AMEnew.df.pivot('Z','N','S2p')
+#plot_df = AMEnew.df.pivot('Z','N','S2p')
+plot_df = AME16.df.pivot('Z','N','Sn')
 ax = sns.heatmap(plot_df, square = True, cmap = 'plasma')
 ax.hlines(Mnumbers, *ax.get_xlim())
 ax.vlines(Mnumbers, *ax.get_ylim())
