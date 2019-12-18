@@ -20,7 +20,7 @@ import xgboost as xgb
 CV = False
 k = 5
 np.random.seed(1234)
-XGBoost = True
+XGBoost = False
 
 #Stochastic gradient descent parameters
 m = 20           #Number of minibatches
@@ -87,6 +87,8 @@ for i, depth in enumerate(depth_vals):
             best_y_tilde_train = y_tilde_train
         
         if best_test_mse > test_mse[i][j]:
+            bestdepth = depth
+            bestlambda = lmbd
             best_test_mse = test_mse[i][j]
             best_y_tilde_test = y_tilde_test
             
@@ -110,7 +112,16 @@ x, y, z = rescaled_dataset[:,0], rescaled_dataset[:,1], rescaled_dataset[:,-1]
 #generate plain dataset for plotting
 neut = AME16.df['N'].to_numpy()
 prot = AME16.df['Z'].to_numpy()
-Mexc = AME16.df['MassExcess'].to_numpy()
+Mexc = AME16.df['B/A'].to_numpy()
 
 #Plot best fit
 plot_3d_terrain(x, y, z, neut, prot, Mexc)
+
+#Save predictions
+DecisionTree_data = np.concatenate((x[:,np.newaxis],y[:,np.newaxis],z[:,np.newaxis]), axis = 1)
+if XGBoost:
+    header = 'XGBoost method. (Best) depth: ' + str(int(bestdepth)) + '. Associated L2 hyperparameter: ' + str(bestlambda) + '. Columns: N, Z, ExcessMass.'
+    np.savetxt('XGBoost_data.txt', DecisionTree_data, header = header)
+else:
+    header = 'Decision tree method, with pruning. (Best) depth: ' + str(int(bestdepth)) + '. Associated L2 hyperparameter: ' + str(bestlambda) + '. Columns: N, Z, ExcessMass.'    
+    np.savetxt('DecisionTree_data.txt', DecisionTree_data, header = header)

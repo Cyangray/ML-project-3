@@ -7,8 +7,8 @@ import copy
 filepaths12 = ['data/mass12.txt', 'data/rct1-12.txt', 'data/rct2-12.txt']
 filepaths16 = ['data/mass16.txt', 'data/rct1-16.txt', 'data/rct2-16.txt']
 
-AME12 = AtomicMasses(filepaths12)
-AME16 = AtomicMasses(filepaths16)
+AME12 = AtomicMasses(filepaths12, usealldata = False)
+AME16 = AtomicMasses(filepaths16, usealldata = False)
 
 AME12.add_oddeven()
 AME16.add_oddeven()

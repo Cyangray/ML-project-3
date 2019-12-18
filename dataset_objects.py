@@ -232,31 +232,39 @@ class credit_card_dataset(dataset):
         self.output_labels = ["Non-default", "Default"]
 
 class AtomicMasses(dataset):
-    def __init__(self, filenames):
+    def __init__(self, filenames, usealldata = True):
         super().__init__(0)
         
         self.pandas_df = True
+        self.usealldata = usealldata
         # Read the experimental data with Pandas
-        dataset = pd.read_fwf(filenames[0], usecols=(2, 3, 4, 6, 9, 15),
-                      names=('N', 'Z', 'A', 'Element', 'MassExcess', 'BetaDecayEnergy'),
-                      widths=(1,3,5,5,5,1,3,4,1,13,11,11,9,1,2,11,9,1,3,1,12,11,1),
-                      header=39,
-                      index_col=False)
-        
-        new_dataset_1 = pd.read_fwf(filenames[1], usecols=(6,8),
-                      names=('S2n', 'S2p'),
-                      widths=(1,3,1,3,3,1,10,8,10,8,10,8,10,8,10,8,10,8),
-                      header=39,
-                      index_col=False)
-        
-        new_dataset_2 = pd.read_fwf(filenames[2], usecols=(6,8),
-                      names=('Sn', 'Sp'),
-                      widths=(1,3,1,3,3,1,10,8,10,8,10,8,10,8,10,8,10,8),
-                      header=39,
-                      index_col=False)
-        
-        self.df = pd.concat([dataset, new_dataset_1, new_dataset_2], axis = 1)
-        
+        if usealldata:
+            dataset = pd.read_fwf(filenames[0], usecols=(2, 3, 4, 6, 11, 15),
+                          names=('N', 'Z', 'A', 'Element', 'B/A', 'BetaDecayEnergy'),
+                          widths=(1,3,5,5,5,1,3,4,1,13,11,11,9,1,2,11,9,1,3,1,12,11,1),
+                          header=39,
+                          index_col=False)
+            
+            new_dataset_1 = pd.read_fwf(filenames[1], usecols=(6,8),
+                          names=('S2n', 'S2p'),
+                          widths=(1,3,1,3,3,1,10,8,10,8,10,8,10,8,10,8,10,8),
+                          header=39,
+                          index_col=False)
+            
+            new_dataset_2 = pd.read_fwf(filenames[2], usecols=(6,8),
+                          names=('Sn', 'Sp'),
+                          widths=(1,3,1,3,3,1,10,8,10,8,10,8,10,8,10,8,10,8),
+                          header=39,
+                          index_col=False)
+            self.df = pd.concat([dataset, new_dataset_1, new_dataset_2], axis = 1)
+        else:
+            dataset = pd.read_fwf(filenames[0], usecols=(2, 3, 4, 6, 11),
+                          names=('N', 'Z', 'A', 'Element', 'B/A'),
+                          widths=(1,3,5,5,5,1,3,4,1,13,11,11,9,1,2,11,9,1,3,1,12,11,1),
+                          header=39,
+                          index_col=False)
+            self.df = dataset
+                
         givenames = True
         if givenames == True:
             for idx, row in self.df.iterrows():
@@ -284,19 +292,23 @@ class AtomicMasses(dataset):
         # meaning where the entry is '*'
         
         #72Cu, 209Ac is found in AME12, but only experimental in AME16. Value is dropped
-        AME12butnot16 = ['72Cu', '209Ac']
+        AME12butnot16 = ['72Cu', '209Ac', '70Co', '80Zr', '209Th']
         for nucleus in AME12butnot16:
             self.df.drop(nucleus, inplace = True)
         
-        columns = ['MassExcess', 'BetaDecayEnergy', 'S2n', 'S2p', 'Sn', 'Sp']
+        
+        if self.usealldata:
+            columns = ['B/A', 'BetaDecayEnergy', 'S2n', 'S2p', 'Sn', 'Sp']
+        else:
+            columns = ['B/A']
         for col in columns:
             self.df[col] = pd.to_numeric(self.df[col], errors='coerce')
             self.df = self.df.dropna()
             # Convert from keV to MeV.
             self.df[col] /= 1000
         
-        target = self.df.pop('MassExcess')
-        self.df['MassExcess'] = target
+        target = self.df.pop('B/A')
+        self.df['B/A'] = target
         self.values = np.copy(self.df.to_numpy())
         self.feature_names = np.copy(self.df.columns)
         
