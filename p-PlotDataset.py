@@ -1,23 +1,38 @@
 import numpy as np
-from dataset_objects import AtomicMasses
 import matplotlib.pyplot as plt
-import seaborn as sns; sns.set()
+import seaborn as sns
 import pickle
 
 #Load the datasets
 with open('datasets.pkl', 'rb') as input:
     Datasets = pickle.load(input)
-
 AME12 = Datasets[0]
 AME16 = Datasets[1]
-AMEnew = Datasets[2]
+testset = Datasets[2]
 
-#A plot
-Mnumbers = np.array([2, 8, 20, 28, 50, 82, 126]) -3
-
-#plot_df = AMEnew.df.pivot('Z','N','S2p')
-plot_df = AME16.df.pivot('Z','N','Sn')
-ax = sns.heatmap(plot_df, square = True, cmap = 'plasma')
-ax.hlines(Mnumbers, *ax.get_xlim())
-ax.vlines(Mnumbers, *ax.get_ylim())
-ax.invert_yaxis()
+def draw_dataset(dataset, quantity):
+    
+    if quantity == 'B':
+        title_query = 'total binding energy'
+    elif quantity == 'B/A':
+        title_query = 'binding energy per nucleon'
+    else:
+        title_query = quantity
+    
+    # Magic numbers
+    Mnumbers = np.array([2, 8, 20, 28, 50, 82, 126]) -3
+    
+    fig, ax = plt.subplots()
+    sns.set()
+    
+    plot_df = dataset.df.pivot('Z','N', quantity)
+    plot_df.dropna()
+    sns.heatmap(plot_df, square = True, cmap = 'plasma', ax=ax)
+    ax.hlines(Mnumbers, *ax.get_xlim())
+    ax.vlines(Mnumbers, *ax.get_ylim())
+    ax.invert_yaxis()
+    bottom, top = ax.get_ylim()
+    ax.set_ylim(bottom + 0.5, top - 0.5)
+    ax.set_title(dataset.ds_name + ' values for ' + title_query)
+    
+    plt.show()

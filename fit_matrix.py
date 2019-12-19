@@ -33,6 +33,7 @@ class fit():
             self.X = self.inst.x_1d
         else:
             self.X = x
+        self.l = self.X.shape[1]
         return self.X 
         
     def create_polynomial_design_matrix(self, x=0, N=0, deg=0):

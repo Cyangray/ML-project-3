@@ -232,15 +232,37 @@ class credit_card_dataset(dataset):
         self.output_labels = ["Non-default", "Default"]
 
 class AtomicMasses(dataset):
-    def __init__(self, filenames, usealldata = True):
-        super().__init__(0)
+    
+    '''Ad-hoc class for the AME databases.'''
+    
+    def __init__(self, filenames, usealldata = True, target = 'B/A'):
         
+        '''The input 'usealldata' tells the dataset-object to take all the available
+        nuclear properties, these being 'BetaDecayEnergy', 'Sn', 'Sp', 'S2n' and
+        'S2p'. When False, it will only consider 'N', 'Z', 'A' and the target.
+        The input 'target' tells us what value are we interested in evaluating.
+        Default to binding energy per nucleon.'''
+        
+        super().__init__(0)
         self.pandas_df = True
+        self.MeV = False
         self.usealldata = usealldata
+        self.target_label = target
+        if filenames[0] == 'data/mass16.txt':
+            self.ds_name = 'AME2016'
+        elif filenames[0] == 'data/mass12.txt':
+            self.ds_name = 'AME2012'
+        else:
+            self.ds_name = 'other'
+            
+        if target == 'B/A':
+            target_idx = 11
+        elif target == 'MassExcess':
+            target_idx = 9
         # Read the experimental data with Pandas
         if usealldata:
-            dataset = pd.read_fwf(filenames[0], usecols=(2, 3, 4, 6, 11, 15),
-                          names=('N', 'Z', 'A', 'Element', 'B/A', 'BetaDecayEnergy'),
+            dataset = pd.read_fwf(filenames[0], usecols=(2, 3, 4, 6, target_idx, 15),
+                          names=('N', 'Z', 'A', 'Element', target, 'BetaDecayEnergy'),
                           widths=(1,3,5,5,5,1,3,4,1,13,11,11,9,1,2,11,9,1,3,1,12,11,1),
                           header=39,
                           index_col=False)
@@ -258,8 +280,8 @@ class AtomicMasses(dataset):
                           index_col=False)
             self.df = pd.concat([dataset, new_dataset_1, new_dataset_2], axis = 1)
         else:
-            dataset = pd.read_fwf(filenames[0], usecols=(2, 3, 4, 6, 11),
-                          names=('N', 'Z', 'A', 'Element', 'B/A'),
+            dataset = pd.read_fwf(filenames[0], usecols=(2, 3, 4, 6, target_idx),
+                          names=('N', 'Z', 'A', 'Element', target),
                           widths=(1,3,5,5,5,1,3,4,1,13,11,11,9,1,2,11,9,1,3,1,12,11,1),
                           header=39,
                           index_col=False)
@@ -270,48 +292,45 @@ class AtomicMasses(dataset):
             for idx, row in self.df.iterrows():
                 self.df.rename(index={idx : (str(self.df.loc[idx, 'A']) + self.df.loc[idx, 'Element']) }, inplace=True)
         self.df.pop('Element')
-        
-    def add_oddeven(self):
-        '''add a column to the dataset telling if the nucleus is even-even, odd-even
-        or odd-odd. '''
-        self.df['Parity'] = 0
-        for idx, row in self.df.iterrows():
-            if is_odd(row['N']) or is_odd(row['Z']):
-                if is_odd(row['N']) and is_odd(row['Z']): #odd-odd
-                    self.df.at[idx, 'Parity'] = 0
-                else:               #odd-even
-                    self.df.at[idx, 'Parity'] = 1
-            else: #even-even
-                self.df.at[idx, 'Parity'] = 2
-            
     
-    def AMPolishDivide(self):
-        # Extrapolated values are indicated by '#' in place of the decimal place, so
-        # the Ebinding column won't be numeric. Coerce to float and drop these entries.
-        # Do the same for the BetaDecayEnergy, S2n, S2p, Sn and Sp columns where there are no results,
-        # meaning where the entry is '*'
+    def AMPolishDivide(self, total_binding_energy = False):
+        '''Extrapolated values are indicated by '#' in place of the decimal place, so
+        the Ebinding column won't be numeric. Coerce to float and drop these entries.
+        Do the same for the BetaDecayEnergy, S2n, S2p, Sn and Sp columns where there 
+        are no results, meaning where the entry is '*'.
+        The input 'total_binding_energy' tells us whether we are interested in the
+        binding energy per nucleon, or the total binding energy.'''
         
-        #72Cu, 209Ac is found in AME12, but only experimental in AME16. Value is dropped
+        # The isotopes listed below are found in AME12, but only experimental 
+        # in AME16. These values are dropped.
         AME12butnot16 = ['72Cu', '209Ac', '70Co', '80Zr', '209Th']
         for nucleus in AME12butnot16:
             self.df.drop(nucleus, inplace = True)
         
-        
         if self.usealldata:
-            columns = ['B/A', 'BetaDecayEnergy', 'S2n', 'S2p', 'Sn', 'Sp']
+            columns = [self.target_label, 'BetaDecayEnergy', 'S2n', 'S2p', 'Sn', 'Sp']
         else:
-            columns = ['B/A']
+            columns = [self.target_label]
         for col in columns:
             self.df[col] = pd.to_numeric(self.df[col], errors='coerce')
             self.df = self.df.dropna()
             # Convert from keV to MeV.
-            self.df[col] /= 1000
-        
-        target = self.df.pop('B/A')
-        self.df['B/A'] = target
+            if not self.MeV:
+                self.df[col] /= 1000
+                self.MeV = True
+            
+        if total_binding_energy:
+            self.df['B'] = 0.
+            for idx, row in self.df.iterrows():
+                self.df.at[idx, 'B'] = self.df.at[idx, 'B/A'] * self.df.at[idx, 'A']
+            self.df.pop('B/A')
+            target = self.df.pop('B')
+            self.df['B'] = target
+        else:
+            target = self.df.pop('B/A')
+            self.df['B/A'] = target
         self.values = np.copy(self.df.to_numpy())
         self.feature_names = np.copy(self.df.columns)
-        
         
         self.x_1d = self.values[:, :-1]
         self.y_1d = self.values[:,-1]

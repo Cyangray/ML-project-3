@@ -1,4 +1,4 @@
-from mpl_toolkits.mplot3d import Axes3D
+import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
@@ -256,12 +256,14 @@ def plot_terrains(ind_var, ind_var_text, method, CV_text, x_matrices, x_labels, 
     ax2.legend()
     plt.show()
 
-def show_heatmap_mse_R2(lmbd_vals, eta_vals, train_mse, test_mse, train_R2, test_R2, NN = True, eliminate_extremes = True):
+def show_heatmap_mse_R2(lmbd_vals, eta_vals, train_mse, test_mse, train_R2, test_R2, method = 'NN', eliminate_extremes = True):
     
-    if NN:
+    if method == 'NN':
         ylabel = '%\eta'
-    else:
+    elif method == 'Trees':
         ylabel = 'Depth'
+    elif method == 'Regr':
+        ylabel = 'Degree'
     
     titlelist = ['Training MSE', 'Test MSE', 'Training R2 score', 'Test R2 score']
     plotlist = [train_mse, test_mse, train_R2, test_R2]
@@ -291,7 +293,34 @@ def show_heatmap_mse_R2(lmbd_vals, eta_vals, train_mse, test_mse, train_R2, test
     
     plt.tight_layout(h_pad = 2*1.08)
     plt.show()
+
+def draw_dataset(dataset, quantity):
     
+    if quantity == 'B':
+        title_query = 'total binding energy'
+    elif quantity == 'B/A':
+        title_query = 'binding energy per nucleon'
+    else:
+        title_query = quantity
+    
+    # Magic numbers
+    Mnumbers = np.array([2, 8, 20, 28, 50, 82, 126]) -3
+    
+    fig, ax = plt.subplots()
+    sns.set()
+    
+    plot_df = dataset.df.pivot('Z','N', quantity)
+    #plot_df[quantity] = pd.to_numeric(plot_df[quantity], errors='coerce')
+    #plot_df = plot_df.dropna()
+    sns.heatmap(plot_df, square = True, cmap = 'plasma', ax=ax)
+    ax.hlines(Mnumbers, *ax.get_xlim())
+    ax.vlines(Mnumbers, *ax.get_ylim())
+    ax.invert_yaxis()
+    bottom, top = ax.get_ylim()
+    ax.set_ylim(bottom + 0.5, top - 0.5)
+    ax.set_title(dataset.ds_name + ' values for ' + title_query)
+    
+    plt.show()
     
 def show_heatmaps(lmbd_vals, eta_vals, train_accuracy, test_accuracy, train_rocauc, test_rocauc, train_area_ratio, test_area_ratio):
 
