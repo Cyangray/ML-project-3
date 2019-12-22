@@ -286,11 +286,9 @@ class AtomicMasses(dataset):
                           header=39,
                           index_col=False)
             self.df = dataset
-                
-        givenames = True
-        if givenames == True:
-            for idx, row in self.df.iterrows():
-                self.df.rename(index={idx : (str(self.df.loc[idx, 'A']) + self.df.loc[idx, 'Element']) }, inplace=True)
+        
+        for idx, row in self.df.iterrows():
+            self.df.rename(index={idx : (str(self.df.loc[idx, 'A']) + self.df.loc[idx, 'Element']) }, inplace=True)
         self.df.pop('Element')
     
     def AMPolishDivide(self, total_binding_energy = False):

@@ -10,7 +10,7 @@ import xgboost as xgb
 np.random.seed(1234)
 
 #Normal decision trees with pruning, or XGBoost?
-XGBoost = False
+XGBoost = True
 
 # Load dataset
 with open('datasets.pkl', 'rb') as input:

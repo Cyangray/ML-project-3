@@ -16,12 +16,15 @@ AME16 = AtomicMasses(filepaths16, usealldata = False)
 AME12.AMPolishDivide(total_binding_energy = True)
 AME16.AMPolishDivide(total_binding_energy = True)
 
+#draw dataset
 draw_dataset(AME16, 'B')
 
-#Normalize dataset.
+#Normalize dataset
 AME16.normalize_dataset()
 
-#Normalize manually the other dataset so that they all have the same normalization
+#Normalize manually the other dataset so that they all have the same 
+#normalization. This is important if we are using the AME12 dataset as
+#training set, but the new nuclei from AME16 as the target.
 AME12.normalized = True
 AME12.x_1d_unscaled = AME12.x_1d.copy()
 AME12.y_1d_unscaled = AME12.y_1d.copy()

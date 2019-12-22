@@ -4,7 +4,10 @@ import statistical_functions as statistics
 import pickle
 from visualization import show_heatmap_mse_R2, plot_3d_terrain
 
-#'Ridge' or 'LASSO'?
+#Random seed
+np.random.seed(1234)
+
+#'Ridge' or 'LASSO' regression?
 isridge = False
 if isridge:
     method = 'Ridge'
@@ -15,11 +18,8 @@ else:
 lmbd_vals = np.hstack((np.array([0]), np.logspace(-6, -1, 6)))
 deg_vals = np.linspace(0, 15, 16, dtype = int)
 
-#Stochastic gradient descent parameters
-Niterations = 10e5 #also valid as maxiter for LASSO
-
-#Random seed
-np.random.seed(1234)
+#Maxiter for LASSO
+Niterations = 10e5 
 
 # Load datasets
 with open('datasets.pkl', 'rb') as input:
@@ -107,6 +107,6 @@ if isridge:
     header = 'Regression, Ridge. (Best) degree: ' + str(best_deg) + '. Associated L2 hyperparameter: ' + str(best_lambda) + '. Columns: N, Z, B.'
     np.savetxt('Regression_ridge_data.txt', Regr_data, header = header)
 else:
-    header = 'FFNN, LASSO. (Best) degree: ' + str(best_deg) + '. Associated L2 hyperparameter: ' + str(best_lambda) + '. Columns: N, Z, B.'    
+    header = 'Regression, LASSO. (Best) degree: ' + str(best_deg) + '. Associated L2 hyperparameter: ' + str(best_lambda) + '. Columns: N, Z, B.'    
     np.savetxt('Regression_LASSO_data.txt', Regr_data, header = header)
         

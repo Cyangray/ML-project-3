@@ -6,8 +6,8 @@ paper_data = np.loadtxt('paper_data/published_data.txt')
 XGBoost_data = np.loadtxt('XGBoost_data.txt')
 DecTrees_data = np.loadtxt('DecisionTree_data.txt')
 FFNN_sigmoid_lin_data = np.loadtxt('FFNN_sigmoid_lin_data.txt')
-FFNN_tanh_lin_data = np.loadtxt('FFNN_tanh_lin_data.txt')
 FFNN_sigmoid_tanh_data = np.loadtxt('FFNN_sigmoid_tanh_data.txt')
+FFNN_tanh_lin_data = np.loadtxt('FFNN_tanh_lin_data.txt')
 FFNN_tanh_tanh_data = np.loadtxt('FFNN_tanh_tanh_data.txt')
 Regression_OLS_data = np.loadtxt('Regression_OLS_data.txt')
 Regression_ridge_data = np.loadtxt('Regression_ridge_data.txt')
@@ -39,8 +39,8 @@ def keep_only_paper_elements(el_matrix):
 reduced_XGB = keep_only_paper_elements(XGBoost_data)
 reduced_DecTrees = keep_only_paper_elements(DecTrees_data)
 reduced_FFNN_sigmoid_lin = keep_only_paper_elements(FFNN_sigmoid_lin_data)
-reduced_FFNN_tanh_lin = keep_only_paper_elements(FFNN_tanh_lin_data)
 reduced_FFNN_sigmoid_tanh = keep_only_paper_elements(FFNN_sigmoid_tanh_data)
+reduced_FFNN_tanh_lin = keep_only_paper_elements(FFNN_tanh_lin_data)
 reduced_FFNN_tanh_tanh = keep_only_paper_elements(FFNN_tanh_tanh_data)
 reduced_regr_OLS = keep_only_paper_elements(Regression_OLS_data)
 reduced_regr_ridge = keep_only_paper_elements(Regression_ridge_data)
@@ -49,9 +49,9 @@ reduced_regr_LASSO = keep_only_paper_elements(Regression_LASSO_data)
 models = [paper_data, 
           reduced_XGB, 
           reduced_DecTrees, 
-          reduced_FFNN_sigmoid_lin, 
-          reduced_FFNN_tanh_lin,
+          reduced_FFNN_sigmoid_lin,
           reduced_FFNN_sigmoid_tanh, 
+          reduced_FFNN_tanh_lin,
           reduced_FFNN_tanh_tanh,
           reduced_regr_OLS,
           reduced_regr_ridge,
@@ -61,8 +61,8 @@ model_names = ['paper_data',
               'reduced_XGB', 
                'reduced_DecTrees', 
                'reduced_FFNN_sigmoid_lin', 
-               'reduced_FFNN_tanh_lin',
                'reduced_FFNN_sigmoid_tanh', 
+               'reduced_FFNN_tanh_lin',
                'reduced_FFNN_tanh_tanh',
                'reduced_regr_OLS',
                'reduced_regr_ridge',

@@ -10,12 +10,11 @@ np.random.seed(1234)
 
 #Stochastic gradient descent parameters
 m = 20           #Number of minibatches
-Niterations = 5000
 
-#Activation function
+#Activation functions
 acts = ['sigmoid', 'tanh']
 
-#output activation function
+#output activation functions
 out_acts = ['linear', 'tanh']
 
 for act in acts:

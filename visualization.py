@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import cm
+from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 import numpy as np
 import seaborn as sns
@@ -259,7 +260,7 @@ def plot_terrains(ind_var, ind_var_text, method, CV_text, x_matrices, x_labels, 
 def show_heatmap_mse_R2(lmbd_vals, eta_vals, train_mse, test_mse, train_R2, test_R2, method = 'NN', eliminate_extremes = True):
     
     if method == 'NN':
-        ylabel = '%\eta'
+        ylabel = '$\eta$'
     elif method == 'Trees':
         ylabel = 'Depth'
     elif method == 'Regr':
