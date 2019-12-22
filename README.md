@@ -1,4 +1,4 @@
-The report with a description of most of the files is found in file Report-project-3.pdf
+The report with a description of most of the files is found in file Report_project_3.pdf
 
 The proper code files in the repository are make_datasets.py, AME-Regression.py, AME-FFNN.py, AME-DecTrees.py and comparisons.py
 files p-OldNewNuclei.py and p-PlotDataset.py draw some of the plots in the report.
